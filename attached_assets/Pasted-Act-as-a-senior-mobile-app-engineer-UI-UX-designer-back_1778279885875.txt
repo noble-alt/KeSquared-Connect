@@ -1,0 +1,133 @@
+Act as a senior mobile app engineer, UI/UX designer, backend architect, and AI systems developer.
+
+Build a modern university transportation mobile application called “CampusDrop” for students and tricycle drivers inside the University of Ibadan campus.
+
+The application should function similarly to Uber/Bolt but specifically optimized for campus transportation and short-distance rides.
+
+MAIN GOAL:
+Students should be able to request rides from their hostel or current location, and nearby tricycle drivers should instantly receive notifications based on proximity so students can get picked up quickly.
+
+CORE FEATURES:
+
+1. STUDENT APP
+
+* Student registration and login
+* JWT authentication
+* Live GPS location detection
+* Select pickup and destination
+* Request ride button
+* Two ride options:
+  a. Normal Ride (maximum ₦200 within campus)
+  b. Drop Ride (private tricycle ride for ₦500)
+* Real-time driver tracking
+* Ride history
+* Estimated arrival time
+* Driver ratings and reviews
+* Emergency/SOS button
+* Dark mode support
+
+2. DRIVER APP
+
+* Driver registration and approval system
+* Online/offline availability toggle
+* Receive nearby ride requests instantly
+* Accept/reject ride requests
+* Live navigation system
+* Earnings dashboard
+* Trip history
+* Push notifications
+* Wallet/balance tracking
+
+3. ADMIN DASHBOARD
+
+* Approve or reject drivers
+* View all rides in real time
+* Monitor revenue and analytics
+* Suspend fraudulent accounts
+* View active users and drivers
+* Complaint/support management
+
+4. REAL-TIME FUNCTIONALITY
+
+* Use Socket.IO for live communication
+* Detect nearby drivers using GPS radius matching
+* Send requests only to nearby available drivers
+* Real-time trip updates
+* Real-time driver movement on maps
+
+5. AI FEATURES
+   Integrate AI features into the app:
+
+* Smart nearest-driver matching
+* Predict high-demand areas on campus
+* Fraud detection for fake ride requests
+* AI chatbot assistant for students and drivers
+* Ride demand prediction
+* Smart estimated waiting time
+
+6. PAYMENT SYSTEM
+
+* Start with cash payments
+* Build the structure to support future Paystack integration
+* App commission system:
+
+  * Small commission from normal rides
+  * Small commission from drop rides
+
+7. TECH STACK
+   Frontend:
+
+* React Native
+
+Backend:
+
+* Node.js + Express.js
+
+Database:
+
+* MongoDB
+
+Authentication:
+
+* JWT
+
+Maps:
+
+* Google Maps API or Mapbox
+
+Notifications:
+
+* Firebase Cloud Messaging (FCM)
+
+Real-Time:
+
+* Socket.IO
+
+8. UI/UX DESIGN
+
+* Premium modern mobile UI
+* Smooth animations
+* Beautiful dashboard
+* Glassmorphism effects
+* Responsive layouts
+* Minimal but luxurious interface
+* Professional onboarding screens
+
+9. REQUIRED OUTPUT
+   Generate:
+
+* Full project folder structure
+* Backend architecture
+* Database schema
+* API endpoints
+* Frontend screens
+* Authentication system
+* Socket.IO implementation
+* Driver matching algorithm
+* Google Maps integration
+* Deployment instructions
+* Beginner-friendly explanations
+* Clean, scalable, modular code
+
+10. IMPORTANT
+    The app should be optimized specifically for University of Ibadan campus transportation and designed to scale later to other Nigerian universities.

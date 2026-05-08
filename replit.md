@@ -1,45 +1,61 @@
-# [Project name]
+# Ke²Connect
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Campus transportation app for University of Ibadan — students book keke rides, drivers accept requests and track earnings.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/ke2connect run dev` — run the Expo mobile app (via workflow)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
 - `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Expo (SDK 54) + Expo Router (file-based routing)
+- React Native + TypeScript
+- AsyncStorage for all local persistence (no backend needed for MVP)
+- React Context for auth and ride state
+- expo-linear-gradient, expo-haptics, expo-location, @expo/vector-icons
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/ke2connect/` — Expo mobile app
+  - `app/auth/` — Welcome, Login, Register screens
+  - `app/(tabs)/` — Student tab layout: Ride (map), History, Profile
+  - `app/(driver-tabs)/` — Driver tab layout: Drive, Earnings, Trips, Profile
+  - `contexts/AuthContext.tsx` — Auth state, login/register/logout with AsyncStorage
+  - `contexts/RideContext.tsx` — Ride state, driver matching simulation, earnings
+  - `constants/colors.ts` — Nigerian green + gold theme with full dark mode
+  - `constants/locations.ts` — 14 preset UI campus locations + mock drivers
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- **Frontend-only MVP**: All data stored in AsyncStorage. No backend required for the first build.
+- **Two-role navigation**: Students go to `/(tabs)`, drivers to `/(driver-tabs)`. `app/index.tsx` acts as auth gate.
+- **Simulated real-time**: Driver matching uses `setTimeout` (3.5s delay), incoming requests use randomized timers (6-12s when driver is online).
+- **Commission model**: Normal ride ₦200 → driver earns ₦180 (₦20 fee). Drop ride ₦500 → driver earns ₦450 (₦50 fee).
+- **Campus-specific**: 14 preset University of Ibadan locations; UI region coordinates hardcoded as map center.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Students**: Select destination from campus locations, choose Normal (₦200, shared) or Drop (₦500, private) ride, see driver match with name/plate/rating, SOS emergency button
+- **Drivers**: Online/offline toggle, simulated incoming requests with Accept/Reject, active trip management, earnings dashboard, trip history
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Nigerian green (#00A651) + gold (#FFB700) color theme
+- Campus-specific for University of Ibadan
+- Two ride types: Normal ₦200 (shared), Drop ₦500 (private)
+- JWT-style auth stored in AsyncStorage
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `expo-location` doesn't work on web — use `Platform.OS !== "web"` checks
+- Web insets: 67px top, 84px tab bar height (set on tabBarStyle, not paddingBottom)
+- `react-native-maps@1.18.0` (if added later) — do NOT add to `app.json` plugins
+- UUID: use `Date.now().toString() + Math.random().toString(36).substr(2, 9)` not the `uuid` package
+- Only restart the Expo workflow when changing dependencies or hitting Metro errors — HMR handles code changes
 
 ## Pointers
 
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- See the `pnpm-workspace` skill for workspace structure
+- See the `expo` skill for Expo-specific guidelines
