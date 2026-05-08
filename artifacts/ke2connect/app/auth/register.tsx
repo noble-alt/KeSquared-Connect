@@ -54,6 +54,7 @@ export default function RegisterScreen() {
     setLoading(true);
     try {
       await register({ name: name.trim(), email: email.trim(), phone: phone.trim(), password, role, plateNumber: plateNumber.trim() || undefined });
+      router.replace("/");
     } catch (e: any) {
       Alert.alert("Registration Failed", e.message ?? "Please try again");
     } finally {

@@ -39,6 +39,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login(email.trim(), password);
+      router.replace("/");
     } catch (e: any) {
       Alert.alert("Login Failed", e.message ?? "Please try again");
     } finally {
