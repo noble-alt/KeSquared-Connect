@@ -35,7 +35,12 @@
       }
     },
     "web": {
-      "favicon": "./assets/images/icon.png"
+      "favicon": "./assets/images/icon.png",
+      "name": "Ke²Connect",
+      "shortName": "Ke²Connect",
+      "description": "Campus transportation app for University of Ibadan.",
+      "themeColor": "#00A651",
+      "backgroundColor": "#003D1F"
     },
     "plugins": [
       [
