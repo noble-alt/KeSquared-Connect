@@ -27,6 +27,7 @@ export interface RideRecord {
   fare: number;
   status: RideStatus;
   timestamp: number;
+  studentId?: string;
   driverName?: string;
   driverPlate?: string;
   driverRating?: number;
@@ -48,11 +49,11 @@ interface RideContextType {
   driverAvailable: boolean;
   pendingRequest: RideRecord | null;
   driverEta: number;
-  requestRide: (pickup: RideLocation, destination: RideLocation, type: RideType) => void;
+  requestRide: (pickup: RideLocation, destination: RideLocation, type: RideType, studentId?: string) => void;
   cancelRide: () => void;
   acceptRequest: () => void;
   rejectRequest: () => void;
-  completeRide: (userId: string) => Promise<void>;
+  completeRide: (driverId: string) => Promise<void>;
   setDriverAvailable: (available: boolean) => void;
   getRideHistory: (userId: string) => Promise<RideRecord[]>;
   getDriverHistory: (driverId: string) => Promise<RideRecord[]>;
@@ -65,6 +66,8 @@ const RIDE_HISTORY_KEY = "@ke2connect:rideHistory";
 const DRIVER_HISTORY_KEY = "@ke2connect:driverHistory";
 const DRIVER_AVAILABLE_KEY = "@ke2connect:driverAvailable";
 const DRIVER_EARNINGS_KEY = "@ke2connect:driverEarnings";
+const USER_KEY = "@ke2connect:currentUser";
+const USERS_KEY = "@ke2connect:users";
 
 const STUDENT_NAMES = ["Adaeze Obi", "Chukwudi Eze", "Fatima Bello", "Kehinde Adeyemi", "Ngozi Okonkwo", "Taiwo Badmus"];
 const STUDENT_PHONES = ["08012345678", "08098765432", "08145678901", "08067891234", "08056789012", "08034567890"];
@@ -75,8 +78,10 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
   const [driverAvailable, setDriverAvailableState] = useState(false);
   const [pendingRequest, setPendingRequest] = useState<RideRecord | null>(null);
   const [driverEta, setDriverEta] = useState(0);
+
   const etaIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const requestTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoCompleteRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     AsyncStorage.getItem(DRIVER_AVAILABLE_KEY).then((val) => {
@@ -85,6 +90,7 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (etaIntervalRef.current) clearInterval(etaIntervalRef.current);
       if (requestTimerRef.current) clearTimeout(requestTimerRef.current);
+      if (autoCompleteRef.current) clearTimeout(autoCompleteRef.current);
     };
   }, []);
 
@@ -94,6 +100,7 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
     if (!available) setPendingRequest(null);
   }, []);
 
+  // Simulate incoming ride requests for drivers
   useEffect(() => {
     if (!driverAvailable || currentRide) return;
     const delay = 6000 + Math.random() * 6000;
@@ -121,7 +128,55 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
     return () => { if (requestTimerRef.current) clearTimeout(requestTimerRef.current); };
   }, [driverAvailable, currentRide, pendingRequest]);
 
-  const requestRide = useCallback((pickup: RideLocation, destination: RideLocation, type: RideType) => {
+  // Auto-complete student ride after ~40s in_progress — save to history & update totalRides
+  useEffect(() => {
+    if (rideStatus !== "in_progress" || !currentRide) return;
+    const rideSnapshot = currentRide;
+
+    autoCompleteRef.current = setTimeout(async () => {
+      const completed: RideRecord = { ...rideSnapshot, status: "completed" };
+
+      if (rideSnapshot.studentId) {
+        const histKey = `${RIDE_HISTORY_KEY}:${rideSnapshot.studentId}`;
+        const stored = await AsyncStorage.getItem(histKey);
+        const hist: RideRecord[] = stored ? JSON.parse(stored) : [];
+        await AsyncStorage.setItem(histKey, JSON.stringify([completed, ...hist]));
+
+        // Increment student's totalRides in AsyncStorage
+        const userStored = await AsyncStorage.getItem(USER_KEY);
+        if (userStored) {
+          const userData = JSON.parse(userStored);
+          if (userData.id === rideSnapshot.studentId) {
+            const updatedUser = { ...userData, totalRides: (userData.totalRides ?? 0) + 1 };
+            await AsyncStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+          }
+        }
+        const usersStored = await AsyncStorage.getItem(USERS_KEY);
+        if (usersStored) {
+          const users: Array<{ id: string; totalRides: number }> = JSON.parse(usersStored);
+          const idx = users.findIndex((u) => u.id === rideSnapshot.studentId);
+          if (idx !== -1) {
+            users[idx].totalRides = (users[idx].totalRides ?? 0) + 1;
+            await AsyncStorage.setItem(USERS_KEY, JSON.stringify(users));
+          }
+        }
+      }
+
+      setCurrentRide(null);
+      setRideStatus("idle");
+      setDriverEta(0);
+    }, 40000);
+
+    return () => { if (autoCompleteRef.current) clearTimeout(autoCompleteRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rideStatus]);
+
+  const requestRide = useCallback((
+    pickup: RideLocation,
+    destination: RideLocation,
+    type: RideType,
+    studentId?: string,
+  ) => {
     if (etaIntervalRef.current) clearInterval(etaIntervalRef.current);
     const driver = MOCK_DRIVERS[Math.floor(Math.random() * MOCK_DRIVERS.length)];
     const ride: RideRecord = {
@@ -132,20 +187,21 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
       fare: type === "normal" ? 200 : 500,
       status: "searching",
       timestamp: Date.now(),
+      studentId,
     };
     setCurrentRide(ride);
     setRideStatus("searching");
 
     setTimeout(() => {
       const etaMinutes = Math.floor(Math.random() * 4) + 2;
-      const updated: RideRecord = {
+      const withDriver: RideRecord = {
         ...ride,
         status: "driver_arriving",
         driverName: driver.name,
         driverPlate: driver.plate,
         driverRating: driver.rating,
       };
-      setCurrentRide(updated);
+      setCurrentRide(withDriver);
       setRideStatus("driver_arriving");
       setDriverEta(etaMinutes);
 
@@ -155,8 +211,8 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
         setDriverEta(Math.max(0, Math.ceil(eta / 60)));
         if (eta <= 0) {
           if (etaIntervalRef.current) clearInterval(etaIntervalRef.current);
-          setRideStatus("in_progress");
           setCurrentRide((prev) => prev ? { ...prev, status: "in_progress" } : prev);
+          setRideStatus("in_progress");
         }
       }, 5000);
     }, 3500);
@@ -164,6 +220,7 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
 
   const cancelRide = useCallback(() => {
     if (etaIntervalRef.current) clearInterval(etaIntervalRef.current);
+    if (autoCompleteRef.current) clearTimeout(autoCompleteRef.current);
     setCurrentRide(null);
     setRideStatus("idle");
     setDriverEta(0);
@@ -186,14 +243,18 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
     const earning = currentRide.fare - commission;
     const completed: RideRecord = { ...currentRide, status: "completed", earning };
 
+    // Save to driver trip history
     const histKey = `${DRIVER_HISTORY_KEY}:${driverId}`;
     const stored = await AsyncStorage.getItem(histKey);
     const hist: RideRecord[] = stored ? JSON.parse(stored) : [];
     await AsyncStorage.setItem(histKey, JSON.stringify([completed, ...hist]));
 
+    // Update driver earnings
     const earnKey = `${DRIVER_EARNINGS_KEY}:${driverId}`;
     const earnStored = await AsyncStorage.getItem(earnKey);
-    const earn: DriverEarnings = earnStored ? JSON.parse(earnStored) : { today: 0, week: 0, total: 0, tripsToday: 0 };
+    const earn: DriverEarnings = earnStored
+      ? JSON.parse(earnStored)
+      : { today: 0, week: 0, total: 0, tripsToday: 0 };
     const updatedEarn: DriverEarnings = {
       today: earn.today + earning,
       week: earn.week + earning,
@@ -201,6 +262,26 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
       tripsToday: earn.tripsToday + 1,
     };
     await AsyncStorage.setItem(earnKey, JSON.stringify(updatedEarn));
+
+    // Update driver's totalRides
+    const userStored = await AsyncStorage.getItem(USER_KEY);
+    if (userStored) {
+      const userData = JSON.parse(userStored);
+      if (userData.id === driverId) {
+        const updatedUser = { ...userData, totalRides: (userData.totalRides ?? 0) + 1 };
+        await AsyncStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+      }
+    }
+    const usersStored = await AsyncStorage.getItem(USERS_KEY);
+    if (usersStored) {
+      const users: Array<{ id: string; totalRides: number }> = JSON.parse(usersStored);
+      const idx = users.findIndex((u) => u.id === driverId);
+      if (idx !== -1) {
+        users[idx].totalRides = (users[idx].totalRides ?? 0) + 1;
+        await AsyncStorage.setItem(USERS_KEY, JSON.stringify(users));
+      }
+    }
+
     setCurrentRide(null);
     setRideStatus("idle");
     setDriverEta(0);
@@ -218,15 +299,28 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
 
   const getDriverEarnings = useCallback(async (driverId: string) => {
     const stored = await AsyncStorage.getItem(`${DRIVER_EARNINGS_KEY}:${driverId}`);
-    return stored ? (JSON.parse(stored) as DriverEarnings) : { today: 0, week: 0, total: 0, tripsToday: 0 };
+    return stored
+      ? (JSON.parse(stored) as DriverEarnings)
+      : { today: 0, week: 0, total: 0, tripsToday: 0 };
   }, []);
 
   return (
     <RideContext.Provider
       value={{
-        currentRide, rideStatus, driverAvailable, pendingRequest, driverEta,
-        requestRide, cancelRide, acceptRequest, rejectRequest, completeRide,
-        setDriverAvailable, getRideHistory, getDriverHistory, getDriverEarnings,
+        currentRide,
+        rideStatus,
+        driverAvailable,
+        pendingRequest,
+        driverEta,
+        requestRide,
+        cancelRide,
+        acceptRequest,
+        rejectRequest,
+        completeRide,
+        setDriverAvailable,
+        getRideHistory,
+        getDriverHistory,
+        getDriverEarnings,
       }}
     >
       {children}

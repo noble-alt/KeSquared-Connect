@@ -8,15 +8,32 @@
     "scheme": "ke2connect",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#003D1F"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "ng.edu.ui.ke2connect",
+      "buildNumber": "1"
     },
-    "android": {},
+    "android": {
+      "package": "ng.edu.ui.ke2connect",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.VIBRATE"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#003D1F"
+      }
+    },
     "web": {
       "favicon": "./assets/images/icon.png"
     },
@@ -28,7 +45,14 @@
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Ke²Connect needs your location to show nearby keke rides on campus.",
+          "locationWhenInUsePermission": "Ke²Connect uses your location to match you with the nearest available driver."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

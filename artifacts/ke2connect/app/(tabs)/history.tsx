@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AdBanner } from "@/components/AdBanner";
 import { RideCard } from "@/components/RideCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { type RideRecord, useRide } from "@/contexts/RideContext";
@@ -55,6 +56,8 @@ export default function HistoryScreen() {
         </Text>
       </View>
 
+      <AdBanner style={styles.adBanner} />
+
       {rides.length === 0 ? (
         <View style={styles.empty}>
           <View style={[styles.emptyIcon, { backgroundColor: colors.secondary }]}>
@@ -87,6 +90,7 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: 20, paddingBottom: 16 },
   title: { fontSize: 26 },
   subtitle: { fontSize: 14, marginTop: 4 },
+  adBanner: { marginHorizontal: 16, marginBottom: 4 },
   list: { paddingHorizontal: 16, paddingTop: 4 },
   empty: { flex: 1, alignItems: "center", justifyContent: "center", gap: 12, paddingHorizontal: 40 },
   emptyIcon: { width: 72, height: 72, borderRadius: 36, alignItems: "center", justifyContent: "center", marginBottom: 8 },

@@ -17,6 +17,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AdBanner } from "@/components/AdBanner";
 import { SOSButton } from "@/components/SOSButton";
 import { CAMPUS_LOCATIONS, UI_REGION, type CampusLocation } from "@/constants/locations";
 import { useAuth } from "@/contexts/AuthContext";
@@ -98,7 +99,7 @@ export default function StudentHomeScreen() {
     if (!selectedDest || !selectedType) return;
     const pickup: RideLocation = { name: locationName, latitude: UI_REGION.latitude, longitude: UI_REGION.longitude };
     const dest: RideLocation = { name: selectedDest.name, latitude: selectedDest.latitude, longitude: selectedDest.longitude };
-    requestRide(pickup, dest, selectedType);
+    requestRide(pickup, dest, selectedType, user?.id);
   };
 
   const handleCancel = () => {
@@ -145,6 +146,7 @@ export default function StudentHomeScreen() {
             <Text style={[styles.sheetTitle, { color: colors.foreground, fontFamily: "Inter_700Bold" }]}>
               Where to?
             </Text>
+            <AdBanner style={styles.adBanner} />
             <FlatList
               data={CAMPUS_LOCATIONS}
               keyExtractor={(item) => item.id}
@@ -399,6 +401,7 @@ const styles = StyleSheet.create({
   sheetHandle: { alignItems: "center", paddingVertical: 10 },
   handle: { width: 36, height: 4, borderRadius: 2 },
   sheetTitle: { fontSize: 20, paddingHorizontal: 20, marginBottom: 8 },
+  adBanner: { marginHorizontal: 12, marginBottom: 8 },
   locationList: { flex: 1, paddingHorizontal: 12 },
   locationItem: {
     flexDirection: "row",
