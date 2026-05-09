@@ -1,25 +1,29 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import React from "react";
 import {
   Alert,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { type Settings, useSettings } from "@/contexts/SettingsContext";
 import { useColors } from "@/hooks/useColors";
 
 export default function ProfileScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuth();
+  const { settings, updateSetting } = useSettings();
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 84 : insets.bottom + 60;
@@ -38,6 +42,30 @@ export default function ProfileScreen() {
     ]);
   };
 
+  const handleToggle = <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    Haptics.selectionAsync();
+    updateSetting(key, value);
+  };
+
+  const handleSupport = () => {
+    Alert.alert(
+      "Help & Support",
+      "📧  support@ke2connect.ng\n📞  +234 800 KE2 CONN\n\nAvailable Mon–Fri, 8am–6pm WAT.\n\nFor urgent issues, use the SOS button on the ride screen.",
+      [
+        { text: "Send Email", onPress: () => Linking.openURL("mailto:support@ke2connect.ng") },
+        { text: "Close", style: "cancel" },
+      ],
+    );
+  };
+
+  const handleAbout = () => {
+    Alert.alert(
+      "About Ke²Connect",
+      "Version 1.0.0\n\nKe²Connect is the official campus keke-napep ride-hailing platform for the University of Ibadan.\n\nBuilt for students and drivers of UI community.",
+      [{ text: "OK" }],
+    );
+  };
+
   const initials = user?.name
     ?.split(" ")
     .map((n) => n[0])
@@ -45,12 +73,23 @@ export default function ProfileScreen() {
     .join("")
     .toUpperCase() ?? "?";
 
-  const menuItems = [
-    { icon: "bell", label: "Notifications", action: () => Alert.alert("Coming soon", "Notification settings will be available soon") },
-    { icon: "shield", label: "Privacy & Safety", action: () => Alert.alert("Coming soon", "Privacy settings will be available soon") },
-    { icon: "help-circle", label: "Help & Support", action: () => Alert.alert("Support", "For support, contact:\nsupport@ke2connect.ng\n+234 800 KE2 CONN") },
-    { icon: "info", label: "About Ke²Connect", action: () => Alert.alert("About", "Ke²Connect v1.0\nUniversity of Ibadan's campus transportation platform") },
-  ];
+  const themeLabel =
+    settings.themePreference === "dark"
+      ? "Dark"
+      : settings.themePreference === "light"
+      ? "Light"
+      : "System";
+
+  const cycleTheme = () => {
+    Haptics.selectionAsync();
+    const next =
+      settings.themePreference === "system"
+        ? "light"
+        : settings.themePreference === "light"
+        ? "dark"
+        : "system";
+    updateSetting("themePreference", next);
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -70,7 +109,7 @@ export default function ProfileScreen() {
             <Text style={styles.statNum}>{user?.totalRides ?? 0}</Text>
             <Text style={styles.statLabel}>Rides</Text>
           </View>
-          <View style={[styles.statDivider]} />
+          <View style={styles.statDivider} />
           <View style={styles.stat}>
             <Text style={styles.statNum}>★ {user?.rating?.toFixed(1) ?? "5.0"}</Text>
             <Text style={styles.statLabel}>Rating</Text>
@@ -87,30 +126,88 @@ export default function ProfileScreen() {
         contentContainerStyle={[styles.content, { paddingBottom: bottomPad }]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.infoCard, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
+        {/* Account info */}
+        <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
+          <SectionLabel label="Account" colors={colors} />
           <InfoRow icon="mail" label="Email" value={user?.email ?? ""} colors={colors} />
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          <Divider colors={colors} />
           <InfoRow icon="phone" label="Phone" value={user?.phone ?? ""} colors={colors} />
         </View>
 
-        <View style={[styles.menuCard, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
-          {menuItems.map((item, idx) => (
-            <View key={item.label}>
-              <Pressable
-                onPress={item.action}
-                style={({ pressed }) => [styles.menuItem, { backgroundColor: pressed ? colors.muted : "transparent" }]}
-              >
-                <View style={[styles.menuIcon, { backgroundColor: colors.secondary }]}>
-                  <Feather name={item.icon as any} size={18} color={colors.primary} />
-                </View>
-                <Text style={[styles.menuLabel, { color: colors.foreground, fontFamily: "Inter_500Medium" }]}>
-                  {item.label}
-                </Text>
-                <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
-              </Pressable>
-              {idx < menuItems.length - 1 && <View style={[styles.divider, { backgroundColor: colors.border, marginLeft: 60 }]} />}
+        {/* Notifications */}
+        <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
+          <SectionLabel label="Notifications" colors={colors} />
+          <ToggleRow
+            icon="bell"
+            label="Push Notifications"
+            desc="Receive alerts for ride status updates"
+            value={settings.notificationsEnabled}
+            onToggle={(v) => handleToggle("notificationsEnabled", v)}
+            colors={colors}
+          />
+          <Divider colors={colors} indent />
+          <ToggleRow
+            icon="volume-2"
+            label="Sound"
+            desc="Play sounds for alerts and confirmations"
+            value={settings.soundEnabled}
+            onToggle={(v) => handleToggle("soundEnabled", v)}
+            colors={colors}
+          />
+          <Divider colors={colors} indent />
+          <ToggleRow
+            icon="smartphone"
+            label="Vibration"
+            desc="Vibrate for incoming ride notifications"
+            value={settings.vibrationEnabled}
+            onToggle={(v) => handleToggle("vibrationEnabled", v)}
+            colors={colors}
+          />
+        </View>
+
+        {/* Privacy */}
+        <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
+          <SectionLabel label="Privacy & Safety" colors={colors} />
+          <ToggleRow
+            icon="eye"
+            label="Share Ride History"
+            desc="Allow drivers to see your ride count and rating"
+            value={settings.shareRideHistory}
+            onToggle={(v) => handleToggle("shareRideHistory", v)}
+            colors={colors}
+          />
+        </View>
+
+        {/* Appearance */}
+        <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
+          <SectionLabel label="Appearance" colors={colors} />
+          <Pressable
+            onPress={cycleTheme}
+            style={({ pressed }) => [styles.rowBase, { backgroundColor: pressed ? colors.muted : "transparent" }]}
+          >
+            <View style={[styles.rowIcon, { backgroundColor: colors.secondary }]}>
+              <Feather name="moon" size={17} color={colors.primary} />
             </View>
-          ))}
+            <View style={styles.rowBody}>
+              <Text style={[styles.rowLabel, { color: colors.foreground, fontFamily: "Inter_500Medium" }]}>Dark Mode</Text>
+              <Text style={[styles.rowDesc, { color: colors.mutedForeground, fontFamily: "Inter_400Regular" }]}>
+                Currently: {themeLabel}
+              </Text>
+            </View>
+            <View style={[styles.themePill, { backgroundColor: colors.secondary }]}>
+              <Text style={[styles.themePillText, { color: colors.primary, fontFamily: "Inter_600SemiBold" }]}>
+                {themeLabel}
+              </Text>
+            </View>
+          </Pressable>
+        </View>
+
+        {/* More */}
+        <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
+          <SectionLabel label="More" colors={colors} />
+          <LinkRow icon="help-circle" label="Help & Support" onPress={handleSupport} colors={colors} />
+          <Divider colors={colors} indent />
+          <LinkRow icon="info" label="About Ke²Connect" onPress={handleAbout} colors={colors} />
         </View>
 
         <Pressable
@@ -130,15 +227,68 @@ export default function ProfileScreen() {
   );
 }
 
+function SectionLabel({ label, colors }: { label: string; colors: any }) {
+  return (
+    <Text style={[styles.sectionLabel, { color: colors.mutedForeground, fontFamily: "Inter_600SemiBold" }]}>
+      {label.toUpperCase()}
+    </Text>
+  );
+}
+
+function Divider({ colors, indent }: { colors: any; indent?: boolean }) {
+  return <View style={[styles.divider, { backgroundColor: colors.border, marginLeft: indent ? 62 : 0 }]} />;
+}
+
 function InfoRow({ icon, label, value, colors }: { icon: string; label: string; value: string; colors: any }) {
   return (
-    <View style={styles.infoRow}>
-      <Feather name={icon as any} size={16} color={colors.mutedForeground} />
-      <View style={styles.infoContent}>
-        <Text style={[styles.infoLabel, { color: colors.mutedForeground, fontFamily: "Inter_400Regular" }]}>{label}</Text>
-        <Text style={[styles.infoValue, { color: colors.foreground, fontFamily: "Inter_500Medium" }]}>{value}</Text>
+    <View style={styles.rowBase}>
+      <View style={[styles.rowIcon, { backgroundColor: colors.secondary }]}>
+        <Feather name={icon as any} size={17} color={colors.primary} />
+      </View>
+      <View style={styles.rowBody}>
+        <Text style={[styles.rowDesc, { color: colors.mutedForeground, fontFamily: "Inter_400Regular" }]}>{label}</Text>
+        <Text style={[styles.rowLabel, { color: colors.foreground, fontFamily: "Inter_500Medium" }]}>{value}</Text>
       </View>
     </View>
+  );
+}
+
+function ToggleRow({
+  icon, label, desc, value, onToggle, colors,
+}: {
+  icon: string; label: string; desc: string; value: boolean; onToggle: (v: boolean) => void; colors: any;
+}) {
+  return (
+    <View style={styles.rowBase}>
+      <View style={[styles.rowIcon, { backgroundColor: colors.secondary }]}>
+        <Feather name={icon as any} size={17} color={colors.primary} />
+      </View>
+      <View style={styles.rowBody}>
+        <Text style={[styles.rowLabel, { color: colors.foreground, fontFamily: "Inter_500Medium" }]}>{label}</Text>
+        <Text style={[styles.rowDesc, { color: colors.mutedForeground, fontFamily: "Inter_400Regular" }]}>{desc}</Text>
+      </View>
+      <Switch
+        value={value}
+        onValueChange={onToggle}
+        trackColor={{ false: colors.border, true: colors.primary }}
+        thumbColor="#fff"
+      />
+    </View>
+  );
+}
+
+function LinkRow({ icon, label, onPress, colors }: { icon: string; label: string; onPress: () => void; colors: any }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.rowBase, { backgroundColor: pressed ? colors.muted : "transparent" }]}
+    >
+      <View style={[styles.rowIcon, { backgroundColor: colors.secondary }]}>
+        <Feather name={icon as any} size={17} color={colors.primary} />
+      </View>
+      <Text style={[styles.rowLabel, { color: colors.foreground, fontFamily: "Inter_500Medium", flex: 1 }]}>{label}</Text>
+      <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
+    </Pressable>
   );
 }
 
@@ -155,17 +305,17 @@ const styles = StyleSheet.create({
   statNum: { fontSize: 16, color: "#fff", fontFamily: "Inter_700Bold" },
   statLabel: { fontSize: 11, color: "#ffffff88", fontFamily: "Inter_400Regular" },
   statDivider: { width: 1, height: 28, backgroundColor: "#ffffff33" },
-  content: { padding: 16, gap: 14 },
-  infoCard: { borderWidth: 1, overflow: "hidden" },
-  infoRow: { flexDirection: "row", alignItems: "center", padding: 16, gap: 14 },
-  infoContent: { flex: 1 },
-  infoLabel: { fontSize: 12 },
-  infoValue: { fontSize: 15, marginTop: 1 },
+  content: { padding: 16, gap: 12 },
+  card: { borderWidth: 1, overflow: "hidden", paddingTop: 4 },
+  sectionLabel: { fontSize: 11, letterSpacing: 0.8, paddingHorizontal: 16, paddingTop: 10, paddingBottom: 6 },
+  rowBase: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, gap: 14, minHeight: 56 },
+  rowIcon: { width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center", flexShrink: 0 },
+  rowBody: { flex: 1 },
+  rowLabel: { fontSize: 15 },
+  rowDesc: { fontSize: 12, marginTop: 1 },
   divider: { height: 1 },
-  menuCard: { borderWidth: 1, overflow: "hidden" },
-  menuItem: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 14, gap: 14 },
-  menuIcon: { width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" },
-  menuLabel: { flex: 1, fontSize: 15 },
+  themePill: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20 },
+  themePillText: { fontSize: 13 },
   logoutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 16, borderWidth: 1 },
   logoutText: { fontSize: 16 },
 });
