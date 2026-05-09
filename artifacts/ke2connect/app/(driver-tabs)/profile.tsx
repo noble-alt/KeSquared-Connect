@@ -1,10 +1,9 @@
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useState } from "react";
 import {
   Alert,
-  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -15,6 +14,13 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import {
+  ContactRow,
+  InfoModal,
+  ModalBulletList,
+  ModalGradientBanner,
+  ModalSection,
+} from "@/components/InfoModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { type Settings, useSettings } from "@/contexts/SettingsContext";
 import { useColors } from "@/hooks/useColors";
@@ -24,6 +30,9 @@ export default function DriverProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuth();
   const { settings, updateSetting } = useSettings();
+
+  const [showSupport, setShowSupport] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 84 : insets.bottom + 60;
@@ -47,25 +56,6 @@ export default function DriverProfileScreen() {
     updateSetting(key, value);
   };
 
-  const handleSupport = () => {
-    Alert.alert(
-      "Driver Support",
-      "📧  drivers@ke2connect.ng\n📞  +234 800 KE2 DRIV\n\nAvailable Mon–Fri, 7am–8pm WAT.\n\nFor urgent on-road issues, call our emergency line.",
-      [
-        { text: "Send Email", onPress: () => Linking.openURL("mailto:drivers@ke2connect.ng") },
-        { text: "Close", style: "cancel" },
-      ],
-    );
-  };
-
-  const handleTerms = () => {
-    Alert.alert(
-      "Terms & Conditions",
-      "By using Ke²Connect as a driver you agree to:\n\n• Maintain a valid tricycle permit\n• Treat all students with respect\n• Collect only the stated fares (₦200 Normal, ₦500 Drop)\n• Maintain your vehicle in safe condition\n• The ₦20 / ₦50 platform commission per trip\n\nFull terms: ke2connect.ng/terms",
-      [{ text: "OK" }],
-    );
-  };
-
   const cycleTheme = () => {
     Haptics.selectionAsync();
     const next =
@@ -84,7 +74,8 @@ export default function DriverProfileScreen() {
       ? "Light"
       : "System";
 
-  const initials = user?.name?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() ?? "D";
+  const initials =
+    user?.name?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() ?? "D";
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -130,19 +121,19 @@ export default function DriverProfileScreen() {
         contentContainerStyle={[styles.content, { paddingBottom: bottomPad }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Vehicle & account info */}
+        {/* Account info */}
         <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
-          <SectionLabel label="Account" colors={colors} />
-          <InfoRow icon="mail" label="Email" value={user?.email ?? ""} colors={colors} />
+          <SectionLabel label="Account" colors={colors} accentColor={colors.accent} />
+          <InfoRow icon="mail" label="Email" value={user?.email ?? ""} accentColor={colors.accent} colors={colors} />
           <Divider colors={colors} />
-          <InfoRow icon="phone" label="Phone" value={user?.phone ?? ""} colors={colors} />
+          <InfoRow icon="phone" label="Phone" value={user?.phone ?? ""} accentColor={colors.accent} colors={colors} />
           <Divider colors={colors} />
-          <InfoRow icon="tag" label="Plate Number" value={user?.plateNumber ?? "—"} colors={colors} />
+          <InfoRow icon="tag" label="Plate Number" value={user?.plateNumber ?? "—"} accentColor={colors.accent} colors={colors} />
         </View>
 
         {/* Notifications */}
         <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
-          <SectionLabel label="Notifications" colors={colors} />
+          <SectionLabel label="Notifications" colors={colors} accentColor={colors.accent} />
           <ToggleRow
             icon="bell"
             label="Ride Request Alerts"
@@ -176,11 +167,11 @@ export default function DriverProfileScreen() {
 
         {/* Privacy */}
         <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
-          <SectionLabel label="Privacy" colors={colors} />
+          <SectionLabel label="Privacy" colors={colors} accentColor={colors.accent} />
           <ToggleRow
             icon="bar-chart-2"
             label="Show Earnings on Profile"
-            desc="Display your total earnings summary on your public profile"
+            desc="Display your earnings summary on your public profile"
             value={settings.showEarningsOnProfile}
             onToggle={(v) => handleToggle("showEarningsOnProfile", v)}
             accentColor={colors.accent}
@@ -190,7 +181,7 @@ export default function DriverProfileScreen() {
 
         {/* Appearance */}
         <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
-          <SectionLabel label="Appearance" colors={colors} />
+          <SectionLabel label="Appearance" colors={colors} accentColor={colors.accent} />
           <Pressable
             onPress={cycleTheme}
             style={({ pressed }) => [styles.rowBase, { backgroundColor: pressed ? colors.muted : "transparent" }]}
@@ -214,10 +205,10 @@ export default function DriverProfileScreen() {
 
         {/* More */}
         <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
-          <SectionLabel label="More" colors={colors} />
-          <LinkRow icon="help-circle" label="Driver Support" onPress={handleSupport} colors={colors} accentColor={colors.accent} />
+          <SectionLabel label="More" colors={colors} accentColor={colors.accent} />
+          <LinkRow icon="help-circle" label="Driver Support" onPress={() => setShowSupport(true)} accentColor={colors.accent} colors={colors} />
           <Divider colors={colors} indent />
-          <LinkRow icon="file-text" label="Terms & Conditions" onPress={handleTerms} colors={colors} accentColor={colors.accent} />
+          <LinkRow icon="file-text" label="Terms & Conditions" onPress={() => setShowTerms(true)} accentColor={colors.accent} colors={colors} />
         </View>
 
         <Pressable
@@ -231,11 +222,104 @@ export default function DriverProfileScreen() {
           <Text style={[styles.logoutText, { color: colors.destructive, fontFamily: "Inter_600SemiBold" }]}>Sign Out</Text>
         </Pressable>
       </ScrollView>
+
+      {/* Driver Support modal */}
+      <InfoModal
+        visible={showSupport}
+        onClose={() => setShowSupport(false)}
+        title="Driver Support"
+        icon="help-circle"
+        iconColor={colors.accent}
+      >
+        <ModalGradientBanner
+          gradient={["#1A0A00", "#FF8C00"]}
+          lines={["Driver Support Line", "Available Mon–Fri, 7am–8pm WAT. We're on your side."]}
+        />
+        <ModalSection title="Contact Us" colors={colors}>
+          <ContactRow
+            icon="mail"
+            label="Driver email support"
+            value="drivers@ke2connect.ng"
+            href="mailto:drivers@ke2connect.ng"
+            accentColor={colors.accent}
+          />
+          <ContactRow
+            icon="phone"
+            label="Emergency on-road line"
+            value="+234 800 KE2 DRIV"
+            href="tel:+2348005320348"
+            accentColor={colors.accent}
+          />
+        </ModalSection>
+        <ModalSection title="Driver Tips" colors={colors}>
+          <ModalBulletList
+            accentColor={colors.accent}
+            colors={colors}
+            items={[
+              "Go online only when you're ready to take rides.",
+              "Accept requests promptly — students see your ETA.",
+              "Collect fares in cash at the end of each trip.",
+              "Your ₦20 / ₦50 commission is automatically tracked.",
+              "Maintain a 4.0+ rating to stay on the platform.",
+            ]}
+          />
+        </ModalSection>
+      </InfoModal>
+
+      {/* Terms & Conditions modal */}
+      <InfoModal
+        visible={showTerms}
+        onClose={() => setShowTerms(false)}
+        title="Terms & Conditions"
+        icon="file-text"
+        iconColor={colors.accent}
+      >
+        <ModalGradientBanner
+          gradient={["#1A0A00", "#B36200"]}
+          lines={["Driver Agreement", "Last updated: May 2026"]}
+        />
+        <ModalSection title="Driver Obligations" colors={colors}>
+          <ModalBulletList
+            accentColor={colors.accent}
+            colors={colors}
+            items={[
+              "Maintain a valid tricycle permit and roadworthiness certificate.",
+              "Treat all students with respect and professionalism.",
+              "Collect only the stated fares — ₦200 (Normal) or ₦500 (Drop).",
+              "Keep your vehicle clean and mechanically sound.",
+              "Do not share your Ke²Connect account credentials.",
+            ]}
+          />
+        </ModalSection>
+        <ModalSection title="Commission Structure" colors={colors}>
+          <ModalBulletList
+            accentColor={colors.primary}
+            colors={colors}
+            items={[
+              "Normal Ride: Student pays ₦200 · You earn ₦180 (₦20 fee).",
+              "Drop Ride: Student pays ₦500 · You earn ₦450 (₦50 fee).",
+              "Commission covers platform maintenance and student safety features.",
+            ]}
+          />
+        </ModalSection>
+        <ModalSection title="Account & Safety" colors={colors}>
+          <ModalBulletList
+            accentColor={colors.destructive}
+            colors={colors}
+            items={[
+              "Accounts with ratings below 3.5 may be suspended.",
+              "Student SOS reports are reviewed within 24 hours.",
+              "Ke²Connect reserves the right to deactivate accounts for misconduct.",
+              "Full terms available at ke2connect.ng/driver-terms",
+            ]}
+          />
+        </ModalSection>
+      </InfoModal>
     </View>
   );
 }
 
-function SectionLabel({ label, colors }: { label: string; colors: any }) {
+function SectionLabel({ label, colors, accentColor }: { label: string; colors: any; accentColor: string }) {
   return (
     <Text style={[styles.sectionLabel, { color: colors.mutedForeground, fontFamily: "Inter_600SemiBold" }]}>
       {label.toUpperCase()}
@@ -247,11 +331,11 @@ function Divider({ colors, indent }: { colors: any; indent?: boolean }) {
   return <View style={[styles.divider, { backgroundColor: colors.border, marginLeft: indent ? 62 : 0 }]} />;
 }
 
-function InfoRow({ icon, label, value, colors }: { icon: string; label: string; value: string; colors: any }) {
+function InfoRow({ icon, label, value, accentColor, colors }: { icon: string; label: string; value: string; accentColor: string; colors: any }) {
   return (
     <View style={styles.rowBase}>
-      <View style={[styles.rowIcon, { backgroundColor: colors.accent + "22" }]}>
-        <Feather name={icon as any} size={17} color={colors.accent} />
+      <View style={[styles.rowIcon, { backgroundColor: accentColor + "22" }]}>
+        <Feather name={icon as any} size={17} color={accentColor} />
       </View>
       <View style={styles.rowBody}>
         <Text style={[styles.rowDesc, { color: colors.mutedForeground, fontFamily: "Inter_400Regular" }]}>{label}</Text>

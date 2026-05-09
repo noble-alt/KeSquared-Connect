@@ -1,10 +1,9 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useState } from "react";
 import {
   Alert,
-  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -15,6 +14,13 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import {
+  ContactRow,
+  InfoModal,
+  ModalBulletList,
+  ModalGradientBanner,
+  ModalSection,
+} from "@/components/InfoModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { type Settings, useSettings } from "@/contexts/SettingsContext";
 import { useColors } from "@/hooks/useColors";
@@ -24,6 +30,9 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuth();
   const { settings, updateSetting } = useSettings();
+
+  const [showSupport, setShowSupport] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 84 : insets.bottom + 60;
@@ -47,39 +56,6 @@ export default function ProfileScreen() {
     updateSetting(key, value);
   };
 
-  const handleSupport = () => {
-    Alert.alert(
-      "Help & Support",
-      "📧  support@ke2connect.ng\n📞  +234 800 KE2 CONN\n\nAvailable Mon–Fri, 8am–6pm WAT.\n\nFor urgent issues, use the SOS button on the ride screen.",
-      [
-        { text: "Send Email", onPress: () => Linking.openURL("mailto:support@ke2connect.ng") },
-        { text: "Close", style: "cancel" },
-      ],
-    );
-  };
-
-  const handleAbout = () => {
-    Alert.alert(
-      "About Ke²Connect",
-      "Version 1.0.0\n\nKe²Connect is the official campus keke-napep ride-hailing platform for the University of Ibadan.\n\nBuilt for students and drivers of UI community.",
-      [{ text: "OK" }],
-    );
-  };
-
-  const initials = user?.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase() ?? "?";
-
-  const themeLabel =
-    settings.themePreference === "dark"
-      ? "Dark"
-      : settings.themePreference === "light"
-      ? "Light"
-      : "System";
-
   const cycleTheme = () => {
     Haptics.selectionAsync();
     const next =
@@ -90,6 +66,21 @@ export default function ProfileScreen() {
         : "system";
     updateSetting("themePreference", next);
   };
+
+  const themeLabel =
+    settings.themePreference === "dark"
+      ? "Dark"
+      : settings.themePreference === "light"
+      ? "Light"
+      : "System";
+
+  const initials =
+    user?.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() ?? "?";
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -205,9 +196,9 @@ export default function ProfileScreen() {
         {/* More */}
         <View style={[styles.card, { backgroundColor: colors.card, borderRadius: colors.radius, borderColor: colors.border }]}>
           <SectionLabel label="More" colors={colors} />
-          <LinkRow icon="help-circle" label="Help & Support" onPress={handleSupport} colors={colors} />
+          <LinkRow icon="help-circle" label="Help & Support" onPress={() => setShowSupport(true)} colors={colors} />
           <Divider colors={colors} indent />
-          <LinkRow icon="info" label="About Ke²Connect" onPress={handleAbout} colors={colors} />
+          <LinkRow icon="info" label="About Ke²Connect" onPress={() => setShowAbout(true)} colors={colors} />
         </View>
 
         <Pressable
@@ -223,6 +214,101 @@ export default function ProfileScreen() {
           </Text>
         </Pressable>
       </ScrollView>
+
+      {/* Help & Support modal */}
+      <InfoModal
+        visible={showSupport}
+        onClose={() => setShowSupport(false)}
+        title="Help & Support"
+        icon="help-circle"
+        iconColor={colors.primary}
+      >
+        <ModalGradientBanner
+          gradient={["#003D1F", "#00A651"]}
+          lines={["Ke²Connect Support", "We're here to help you get around campus safely and quickly."]}
+        />
+        <ModalSection title="Contact Us" colors={colors}>
+          <ContactRow
+            icon="mail"
+            label="Email support"
+            value="support@ke2connect.ng"
+            href="mailto:support@ke2connect.ng"
+            accentColor={colors.primary}
+          />
+          <ContactRow
+            icon="phone"
+            label="Phone (Mon–Fri, 8am–6pm WAT)"
+            value="+234 800 KE2 CONN"
+            href="tel:+2348005320666"
+            accentColor={colors.primary}
+          />
+        </ModalSection>
+        <ModalSection title="Common Questions" colors={colors}>
+          <ModalBulletList
+            accentColor={colors.primary}
+            colors={colors}
+            items={[
+              "Use the SOS button during a ride to alert emergency contacts.",
+              "Normal rides (₦200) are shared with up to 3 passengers.",
+              "Drop rides (₦500) are private — just you and the driver.",
+              "Ride history is saved automatically after each completed trip.",
+              "If a driver doesn't arrive, cancel and request a new ride.",
+            ]}
+          />
+        </ModalSection>
+      </InfoModal>
+
+      {/* About modal */}
+      <InfoModal
+        visible={showAbout}
+        onClose={() => setShowAbout(false)}
+        title="About Ke²Connect"
+        icon="info"
+        iconColor={colors.primary}
+      >
+        <ModalGradientBanner
+          gradient={["#003D1F", "#005C2E"]}
+          lines={["Ke²Connect", "Version 1.0.0", "Campus ride-hailing for the University of Ibadan"]}
+        />
+        <ModalSection title="Our Mission" colors={colors}>
+          <ModalBulletList
+            accentColor={colors.primary}
+            colors={colors}
+            items={[
+              "Safe, affordable keke rides across the UI campus.",
+              "Connecting students to verified campus drivers instantly.",
+              "Supporting the UI community with campus-first transport.",
+            ]}
+          />
+        </ModalSection>
+        <ModalSection title="Ride Types" colors={colors}>
+          <ModalBulletList
+            accentColor={colors.accent}
+            colors={colors}
+            items={[
+              "Normal Ride (₦200) — shared, up to 3 students per keke.",
+              "Drop Ride (₦500) — private, direct to your destination.",
+              "All drivers are university-verified and rated by students.",
+            ]}
+          />
+        </ModalSection>
+        <ModalSection title="Contact" colors={colors}>
+          <ContactRow
+            icon="globe"
+            label="Website"
+            value="ke2connect.ng"
+            href="https://ke2connect.ng"
+            accentColor={colors.primary}
+          />
+          <ContactRow
+            icon="mail"
+            label="General enquiries"
+            value="hello@ke2connect.ng"
+            href="mailto:hello@ke2connect.ng"
+            accentColor={colors.primary}
+          />
+        </ModalSection>
+      </InfoModal>
     </View>
   );
 }
@@ -256,7 +342,8 @@ function InfoRow({ icon, label, value, colors }: { icon: string; label: string; 
 function ToggleRow({
   icon, label, desc, value, onToggle, colors,
 }: {
-  icon: string; label: string; desc: string; value: boolean; onToggle: (v: boolean) => void; colors: any;
+  icon: string; label: string; desc: string; value: boolean;
+  onToggle: (v: boolean) => void; colors: any;
 }) {
   return (
     <View style={styles.rowBase}>
