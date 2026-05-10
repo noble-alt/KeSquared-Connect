@@ -1,10 +1,10 @@
-# Ke²Connect
+# CampusDrop
 
 Campus transportation app for University of Ibadan — students book keke rides, drivers accept requests and track earnings.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/ke2connect run dev` — run the Expo mobile app (via workflow)
+- `pnpm --filter @workspace/campusdrop run dev` — run the Expo mobile app (via workflow)
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
 - `pnpm run typecheck` — full typecheck across all packages
 
@@ -18,7 +18,7 @@ Campus transportation app for University of Ibadan — students book keke rides,
 
 ## Where things live
 
-- `artifacts/ke2connect/` — Expo mobile app
+- `artifacts/campusdrop/` — Expo mobile app
   - `app/auth/` — Welcome, Login, Register screens
   - `app/(tabs)/` — Student tab layout: Ride (map), History, Profile
   - `app/(driver-tabs)/` — Driver tab layout: Drive, Earnings, Trips, Profile

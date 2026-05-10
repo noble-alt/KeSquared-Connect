@@ -239,8 +239,8 @@ export default function DriverProfileScreen() {
           <ContactRow
             icon="mail"
             label="Driver email support"
-            value="drivers@ke2connect.ng"
-            href="mailto:drivers@ke2connect.ng"
+            value="drivers@campusdrop.ng"
+            href="mailto:drivers@campusdrop.ng"
             accentColor={colors.accent}
           />
           <ContactRow
@@ -287,7 +287,7 @@ export default function DriverProfileScreen() {
               "Treat all students with respect and professionalism.",
               "Collect only the stated fares — ₦200 (Normal) or ₦500 (Drop).",
               "Keep your vehicle clean and mechanically sound.",
-              "Do not share your Ke²Connect account credentials.",
+              "Do not share your CampusDrop account credentials.",
             ]}
           />
         </ModalSection>
@@ -309,8 +309,8 @@ export default function DriverProfileScreen() {
             items={[
               "Accounts with ratings below 3.5 may be suspended.",
               "Student SOS reports are reviewed within 24 hours.",
-              "Ke²Connect reserves the right to deactivate accounts for misconduct.",
-              "Full terms available at ke2connect.ng/driver-terms",
+              "CampusDrop reserves the right to deactivate accounts for misconduct.",
+              "Full terms available at campusdrop.ng/driver-terms",
             ]}
           />
         </ModalSection>

@@ -86,7 +86,7 @@ export function AdBanner({ style }: AdBannerProps) {
 
   return (
     <Pressable
-      onPress={() => Alert.alert(ad.sponsor, `${ad.tagline}\n\nThis is a sponsored placement on Ke²Connect.`)}
+      onPress={() => Alert.alert(ad.sponsor, `${ad.tagline}\n\nThis is a sponsored placement on CampusDrop.`)}
       style={({ pressed }) => [styles.container, { backgroundColor: colors.card, borderColor: colors.border, borderRadius: colors.radius, opacity: pressed ? 0.92 : 1 }, style]}
     >
       <View style={[styles.accentBar, { backgroundColor: ad.accentColor }]} />

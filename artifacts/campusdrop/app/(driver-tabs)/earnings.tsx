@@ -76,7 +76,7 @@ export default function EarningsScreen() {
             Commission Structure
           </Text>
           <Text style={[styles.sectionDesc, { color: colors.mutedForeground, fontFamily: "Inter_400Regular" }]}>
-            A small platform fee is deducted from each ride to maintain the Ke²Connect service.
+            A small platform fee is deducted from each ride to maintain the CampusDrop service.
           </Text>
 
           <View style={styles.commissionRows}>

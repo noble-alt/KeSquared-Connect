@@ -78,7 +78,7 @@ export default function RegisterScreen() {
         )}
         <Text style={styles.headerTitle}>{isDriver ? "Become a Driver" : "Student Sign Up"}</Text>
         <Text style={styles.headerSub}>
-          {isDriver ? "Join the Ke²Connect driver network" : "Get rides across UI campus instantly"}
+          {isDriver ? "Join the CampusDrop driver network" : "Get rides across UI campus instantly"}
         </Text>
       </LinearGradient>
 

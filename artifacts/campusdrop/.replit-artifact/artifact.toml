@@ -1,8 +1,8 @@
 kind = "mobile"
 previewPath = "/"
-title = "Ke²Connect"
+title = "CampusDrop"
 version = "1.0.0"
-id = "artifacts/ke2connect"
+id = "artifacts/campusdrop"
 router = "expo-domain"
 
 [[integratedSkills]]
@@ -16,11 +16,11 @@ paths = [ "/" ]
 localPort = 19416
 
 [services.development]
-run = "pnpm --filter @workspace/ke2connect run dev"
+run = "pnpm --filter @workspace/campusdrop run dev"
 
 [services.production]
-build = [ "pnpm", "--filter", "@workspace/ke2connect", "run", "build" ]
-run = [ "pnpm", "--filter", "@workspace/ke2connect", "run", "serve" ]
+build = [ "pnpm", "--filter", "@workspace/campusdrop", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/campusdrop", "run", "serve" ]
 
 [services.env]
 PORT = "19416"

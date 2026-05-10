@@ -58,7 +58,7 @@ export default function LoginScreen() {
         </Pressable>
         <MaterialCommunityIcons name="rickshaw" size={36} color="#FFB700" />
         <Text style={styles.headerTitle}>Welcome back</Text>
-        <Text style={styles.headerSub}>Sign in to your Ke²Connect account</Text>
+        <Text style={styles.headerSub}>Sign in to your CampusDrop account</Text>
       </LinearGradient>
 
       <ScrollView

@@ -62,12 +62,12 @@ interface RideContextType {
 
 const RideContext = createContext<RideContextType | null>(null);
 
-const RIDE_HISTORY_KEY = "@ke2connect:rideHistory";
-const DRIVER_HISTORY_KEY = "@ke2connect:driverHistory";
-const DRIVER_AVAILABLE_KEY = "@ke2connect:driverAvailable";
-const DRIVER_EARNINGS_KEY = "@ke2connect:driverEarnings";
-const USER_KEY = "@ke2connect:currentUser";
-const USERS_KEY = "@ke2connect:users";
+const RIDE_HISTORY_KEY = "@campusdrop:rideHistory";
+const DRIVER_HISTORY_KEY = "@campusdrop:driverHistory";
+const DRIVER_AVAILABLE_KEY = "@campusdrop:driverAvailable";
+const DRIVER_EARNINGS_KEY = "@campusdrop:driverEarnings";
+const USER_KEY = "@campusdrop:currentUser";
+const USERS_KEY = "@campusdrop:users";
 
 const STUDENT_NAMES = ["Adaeze Obi", "Chukwudi Eze", "Fatima Bello", "Kehinde Adeyemi", "Ngozi Okonkwo", "Taiwo Badmus"];
 const STUDENT_PHONES = ["08012345678", "08098765432", "08145678901", "08067891234", "08056789012", "08034567890"];

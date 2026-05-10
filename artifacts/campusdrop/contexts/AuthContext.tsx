@@ -35,8 +35,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const USER_KEY = "@ke2connect:currentUser";
-const USERS_KEY = "@ke2connect:users";
+const USER_KEY = "@campusdrop:currentUser";
+const USERS_KEY = "@campusdrop:users";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
