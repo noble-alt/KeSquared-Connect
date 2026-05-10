@@ -34,6 +34,8 @@ export interface RideRecord {
   studentName?: string;
   studentPhone?: string;
   earning?: number;
+  passengerCount?: number;
+  passengers?: Array<{ name: string; phone: string }>;
 }
 
 export interface DriverEarnings {
@@ -111,17 +113,35 @@ export function RideProvider({ children }: { children: React.ReactNode }) {
       let destIdx = Math.floor(Math.random() * locs.length);
       if (destIdx === pickupIdx) destIdx = (destIdx + 1) % locs.length;
       const type: RideType = Math.random() > 0.4 ? "normal" : "drop";
-      const sIdx = Math.floor(Math.random() * STUDENT_NAMES.length);
+
+      // For normal rides, 35% chance it's a group ride (2–3 passengers)
+      const isGroup = type === "normal" && Math.random() < 0.35;
+      const passengerCount = isGroup ? (Math.random() < 0.55 ? 2 : 3) : 1;
+
+      // Pick unique student names for each passenger
+      const usedIndices = new Set<number>();
+      const passengers: Array<{ name: string; phone: string }> = [];
+      while (passengers.length < passengerCount) {
+        const idx = Math.floor(Math.random() * STUDENT_NAMES.length);
+        if (!usedIndices.has(idx)) {
+          usedIndices.add(idx);
+          passengers.push({ name: STUDENT_NAMES[idx], phone: STUDENT_PHONES[idx] });
+        }
+      }
+
+      const farePerPax = type === "normal" ? 200 : 500;
       const req: RideRecord = {
         id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
         pickup: locs[pickupIdx],
         destination: locs[destIdx],
         rideType: type,
-        fare: type === "normal" ? 200 : 500,
+        fare: farePerPax * passengerCount,
         status: "searching",
         timestamp: Date.now(),
-        studentName: STUDENT_NAMES[sIdx],
-        studentPhone: STUDENT_PHONES[sIdx],
+        studentName: passengers[0].name,
+        studentPhone: passengers[0].phone,
+        passengerCount,
+        passengers,
       };
       setPendingRequest(req);
     }, delay);
