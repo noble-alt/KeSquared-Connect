@@ -17,7 +17,7 @@ interface SettingsContextType {
   updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => Promise<void>;
 }
 
-const SETTINGS_KEY = "@ke2connect:settings";
+const SETTINGS_KEY = "@campusdrop:settings";
 
 const DEFAULT_SETTINGS: Settings = {
   themePreference: "system",

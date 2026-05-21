@@ -165,7 +165,7 @@ importers:
         specifier: 3.1.0
         version: 3.1.0
 
-  artifacts/ke2connect:
+  artifacts/campusdrop:
     devDependencies:
       '@babel/core':
         specifier: ^7.25.2

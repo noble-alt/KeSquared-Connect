@@ -20,7 +20,7 @@ export function useColors() {
 
   const palette =
     effective === "dark" && "dark" in colors
-      ? (colors as Record<string, typeof colors.light>).dark
+      ? (colors as unknown as { dark: typeof colors.light }).dark
       : colors.light;
 
   return { ...palette, radius: colors.radius };
