@@ -3,6 +3,6 @@ outputs = []
 
 [[generated]]
 id = "iAuPIMat73-_wUkReAaHQ"
-uri = "file://artifacts/ke2connect/assets/images/icon.png"
+uri = "file://artifacts/campusdrop/assets/images/icon.png"
 type = "image"
-title = "ke2connect app icon"
+title = "campusdrop app icon"
