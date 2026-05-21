@@ -35,12 +35,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/images/icon.png",
-      "name": "CampusDrop",
-      "shortName": "CampusDrop",
-      "description": "Campus transportation app for University of Ibadan.",
-      "themeColor": "#00A651",
-      "backgroundColor": "#003D1F"
+      "favicon": "./assets/images/icon.png"
     },
     "plugins": [
       [
