@@ -198,7 +198,7 @@ export default function ProfileScreen() {
           <SectionLabel label="More" colors={colors} />
           <LinkRow icon="help-circle" label="Help & Support" onPress={() => setShowSupport(true)} colors={colors} />
           <Divider colors={colors} indent />
-          <LinkRow icon="info" label="About Ke²Connect" onPress={() => setShowAbout(true)} colors={colors} />
+          <LinkRow icon="info" label="About CampusDrop" onPress={() => setShowAbout(true)} colors={colors} />
         </View>
 
         <Pressable
@@ -225,14 +225,14 @@ export default function ProfileScreen() {
       >
         <ModalGradientBanner
           gradient={["#003D1F", "#00A651"]}
-          lines={["Ke²Connect Support", "We're here to help you get around campus safely and quickly."]}
+          lines={["CampusDrop Support", "We're here to help you get around campus safely and quickly."]}
         />
         <ModalSection title="Contact Us" colors={colors}>
           <ContactRow
             icon="mail"
             label="Email support"
-            value="support@ke2connect.ng"
-            href="mailto:support@ke2connect.ng"
+            value="support@campusdrop.ng"
+            href="mailto:support@campusdrop.ng"
             accentColor={colors.primary}
           />
           <ContactRow
@@ -262,13 +262,13 @@ export default function ProfileScreen() {
       <InfoModal
         visible={showAbout}
         onClose={() => setShowAbout(false)}
-        title="About Ke²Connect"
+        title="About CampusDrop"
         icon="info"
         iconColor={colors.primary}
       >
         <ModalGradientBanner
           gradient={["#003D1F", "#005C2E"]}
-          lines={["Ke²Connect", "Version 1.0.0", "Campus ride-hailing for the University of Ibadan"]}
+          lines={["CampusDrop", "Version 1.0.0", "Campus ride-hailing for the University of Ibadan"]}
         />
         <ModalSection title="Our Mission" colors={colors}>
           <ModalBulletList
@@ -296,15 +296,15 @@ export default function ProfileScreen() {
           <ContactRow
             icon="globe"
             label="Website"
-            value="ke2connect.ng"
-            href="https://ke2connect.ng"
+            value="campusdrop.ng"
+            href="https://campusdrop.ng"
             accentColor={colors.primary}
           />
           <ContactRow
             icon="mail"
             label="General enquiries"
-            value="hello@ke2connect.ng"
-            href="mailto:hello@ke2connect.ng"
+            value="hello@campusdrop.ng"
+            href="mailto:hello@campusdrop.ng"
             accentColor={colors.primary}
           />
         </ModalSection>

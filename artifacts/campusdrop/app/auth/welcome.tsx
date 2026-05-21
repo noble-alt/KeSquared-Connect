@@ -35,13 +35,13 @@ export default function WelcomeScreen() {
           <View style={styles.logoContainer}>
             <MaterialCommunityIcons name="rickshaw" size={48} color="#fff" />
           </View>
-          <Text style={styles.appName}>Ke²Connect</Text>
+          <Text style={styles.appName}>CampusDrop</Text>
           <Text style={styles.tagline}>Campus rides, made simple</Text>
           <Text style={styles.subtitle}>University of Ibadan's smartest{"\n"}transportation platform</Text>
         </View>
 
         <View style={styles.roleSection}>
-          <Text style={styles.roleQuestion}>How will you use Ke²Connect?</Text>
+          <Text style={styles.roleQuestion}>How will you use CampusDrop?</Text>
 
           <Pressable
             style={({ pressed }) => [styles.roleCard, { opacity: pressed ? 0.9 : 1 }]}

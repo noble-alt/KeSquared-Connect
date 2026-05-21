@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Ke²Connect",
-    "slug": "ke2connect",
+    "name": "CampusDrop",
+    "slug": "campusdrop",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "ke2connect",
+    "scheme": "campusdrop",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "runtimeVersion": {
@@ -18,11 +18,11 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "ng.edu.ui.ke2connect",
+      "bundleIdentifier": "ng.edu.ui.campusdrop",
       "buildNumber": "1"
     },
     "android": {
-      "package": "ng.edu.ui.ke2connect",
+      "package": "ng.edu.ui.campusdrop",
       "versionCode": 1,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
@@ -49,8 +49,8 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Ke²Connect needs your location to show nearby keke rides on campus.",
-          "locationWhenInUsePermission": "Ke²Connect uses your location to match you with the nearest available driver."
+          "locationAlwaysAndWhenInUsePermission": "CampusDrop needs your location to show nearby keke rides on campus.",
+          "locationWhenInUsePermission": "CampusDrop uses your location to match you with the nearest available driver."
         }
       ]
     ],
