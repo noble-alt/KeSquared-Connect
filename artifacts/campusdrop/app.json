@@ -7,10 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "campusdrop",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
@@ -18,17 +14,11 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "ng.edu.ui.campusdrop",
-      "buildNumber": "1"
+      "bundleIdentifier": "ng.edu.ui.campusdrop"
     },
     "android": {
       "package": "ng.edu.ui.campusdrop",
       "versionCode": 1,
-      "permissions": [
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.VIBRATE"
-      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#003D1F"
@@ -38,25 +28,17 @@
       "favicon": "./assets/images/icon.png"
     },
     "plugins": [
-      [
-        "expo-router",
-        {
-          "origin": "https://replit.com/"
-        }
-      ],
+      "expo-router",
       "expo-font",
       "expo-web-browser",
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "CampusDrop needs your location to show nearby keke rides on campus.",
-          "locationWhenInUsePermission": "CampusDrop uses your location to match you with the nearest available driver."
-        }
-      ]
+      "expo-location",
+      "expo-updates"
     ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+    "updates": {
+      "url": "https://u.expo.dev/campusdrop"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
