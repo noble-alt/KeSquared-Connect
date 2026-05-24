@@ -7,10 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "campusdrop",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
@@ -18,8 +14,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "ng.edu.ui.campusdrop",
-      "buildNumber": "1"
+      "bundleIdentifier": "ng.edu.ui.campusdrop"
     },
     "android": {
       "package": "ng.edu.ui.campusdrop",
@@ -54,8 +49,7 @@
       ]
     ],
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+      "typedRoutes": true
     }
   }
 }
